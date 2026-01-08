@@ -3,7 +3,7 @@ import random
 from dataclasses import dataclass
 from enum import Enum, auto
 
-
+# Definicje stanów komórek na planszy
 class CellState(Enum):
     HIDDEN = auto()
     REVEALED = auto()
@@ -14,24 +14,24 @@ class CellState(Enum):
 class Cell:
     is_mine: bool = False # czy pole zawiera minę
     neighbors: int = 0 # liczba min w sąsiedztwie
-    state: CellState = CellState.HIDDEN
+    state: CellState = CellState.HIDDEN # stan pola
 
 
 class Minesweeper:
     def __init__(self, size, mines):
-        self.h = size
-        self.w = size
-        self.mines = mines
+        self.h = size # wysokość planszy
+        self.w = size # szerokość planszy
+        self.mines = mines # liczba min
 
-        # wypełnienie planszy 
+        # Wypełnienie planszy 
         self.board = [[Cell() for _ in range(size)] for _ in range(size)]
         self.game_over = False
         self.win = False
-        self._place_mines()
-        self._compute_neighbors()
+        self._place_mines() # rozmieszczenie min
+        self._compute_neighbors() # obliczenie sąsiadów
 
+    # Losowanie unikalnej pozycji w postaci jednego indeksu
     def _place_mines(self):
-        # losowanie unikalnej pozycji w postaci jednego indeksu
         for p in random.sample(range(self.h * self.w), self.mines):
             y, x = divmod(p, self.w) # zamiana indeksu 1D na 2D
             self.board[y][x].is_mine = True
@@ -42,50 +42,49 @@ class Minesweeper:
                 if self.board[y][x].is_mine:
                     continue
 
-                # sumowanie dla każdej sąsiedniej miny
+                # Zliczenie min w 8 sąsiednich polach
                 self.board[y][x].neighbors = sum(
-                    # sprawdzenie granic planszy
+                    # Sprawdzenie czy w granic planszy
                     0 <= y + dy < self.h and
                     0 <= x + dx < self.w and
-                    # czy sąsiednia komórka to mina
+                    # Sprawdzenie czy sąsiednia komórka to mina
                     self.board[y + dy][x + dx].is_mine
                     for dy in (-1, 0, 1)
                     for dx in (-1, 0, 1)
                 )
 
+    # Odkrywanie pola i sąsiadów, gdy neighbors == 0
     def reveal(self, y, x):
-        c = self.board[y][x]
 
-        # nie odkrywamy ponownie ani flag
-        if c.state != CellState.HIDDEN:
+        c = self.board[y][x]
+        if c.state != CellState.HIDDEN: 
             return
 
         c.state = CellState.REVEALED
-
         if c.is_mine:
             self.game_over = True
             return
 
-        # automatyczne odkrywanie pustych pól
+        # Odkrywanie sąsiadów rekurencyjnie
         if c.neighbors == 0:
             for dy in (-1, 0, 1):
                 for dx in (-1, 0, 1):
                     ny, nx = y + dy, x + dx
                     if 0 <= ny < self.h and 0 <= nx < self.w:
-                        self.reveal(ny, nx)
+                        self.reveal(ny, nx) # jeśli nie ma sąsiadów, odkrywamy sąsiadów
 
-        self._check_win()
+        self._check_win() # sprawdzenie warunku wygranej
 
     def toggle_flag(self, y, x):
         c = self.board[y][x]
-        # przełączanie stanu flagi na ukryte
+        # Przełączanie stanu flagi na ukryte
         if c.state == CellState.HIDDEN:
             c.state = CellState.FLAGGED
         elif c.state == CellState.FLAGGED:
             c.state = CellState.HIDDEN
 
     def _check_win(self):
-        # wygrana gdy wszystkie nieminne pola są odkryte
+        # Wygrana gdy wszystkie niezaminowane pola są odkryte
         for row in self.board:
             for c in row:
                 if not c.is_mine and c.state != CellState.REVEALED:
@@ -101,7 +100,7 @@ def draw_game(stdscr, game, cy, cx):
     for y in range(game.h):
         for x in range(game.w):
             c = game.board[y][x]
-            ch = "■"
+            ch = "■" 
 
             if c.state == CellState.FLAGGED:
                 ch = "⚑"
@@ -124,14 +123,14 @@ def draw_game(stdscr, game, cy, cx):
 
 
 def menu(stdscr):
-    options = [(6, 6), (8, 12), (10, 15)]
+    options = [(6, 6), (8, 12), (10, 15)] # (rozmiar, liczba min)
     idx = 0
 
     while True:
         stdscr.clear()
         h, w = stdscr.getmaxyx()
 
-        # wyśrodkowanie tytułu
+        # Wyśrodkowanie tytułu
         stdscr.addstr(h // 2 - 3, w // 2 - 5, "SAPER")
 
         for i, (size, _) in enumerate(options):
@@ -144,7 +143,8 @@ def menu(stdscr):
         stdscr.refresh()
 
         key = stdscr.getch()
-
+        
+        # Obsługa nawigacji w menu
         if key == curses.KEY_UP:
             idx = (idx - 1) % len(options)
         elif key == curses.KEY_DOWN:
@@ -166,7 +166,7 @@ def main(stdscr):
 
         size, mines = choice
         game = Minesweeper(size, mines)
-        cy = cx = 0
+        cy = cx = 0 # początkowa pozycja kursora
 
         while True:
             draw_game(stdscr, game, cy, cx)
@@ -181,6 +181,7 @@ def main(stdscr):
                     cy = cx = 0
                 continue
 
+            # Obsługa ruchu kursora i akcji
             if key == curses.KEY_UP:
                 cy = max(0, cy - 1)
             elif key == curses.KEY_DOWN:
@@ -196,4 +197,4 @@ def main(stdscr):
 
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+    curses.wrapper(main) # wrapper dba o poprawne inicjalizowanie i zamykanie curses
