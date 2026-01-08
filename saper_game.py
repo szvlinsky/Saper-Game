@@ -1,6 +1,5 @@
 import curses
 import random
-from dataclasses import dataclass
 from enum import Enum, auto
 
 # Definicje stanów komórek na planszy
@@ -8,13 +7,11 @@ class CellState(Enum):
     HIDDEN = auto()
     REVEALED = auto()
     FLAGGED = auto()
-
-
-@dataclass
 class Cell:
-    is_mine: bool = False # czy pole zawiera minę
-    neighbors: int = 0 # liczba min w sąsiedztwie
-    state: CellState = CellState.HIDDEN # stan pola
+    def __init__(self, is_mine=False, neighbors=0, state=CellState.HIDDEN):
+        self.is_mine = is_mine      # czy pole zawiera minę
+        self.neighbors = neighbors # liczba min w sąsiedztwie
+        self.state = state         # aktualny stan pola
 
 
 class Minesweeper:
