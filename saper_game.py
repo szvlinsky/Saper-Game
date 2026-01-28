@@ -13,7 +13,6 @@ class Cell:
         self.neighbors = neighbors # liczba min w sąsiedztwie
         self.state = state         # aktualny stan pola
 
-
 class Minesweeper:
     def __init__(self, size, mines):
         self.h = size # wysokość planszy
@@ -24,16 +23,16 @@ class Minesweeper:
         self.board = [[Cell() for _ in range(size)] for _ in range(size)]
         self.game_over = False
         self.win = False
-        self._place_mines() # rozmieszczenie min
-        self._compute_neighbors() # obliczenie sąsiadów
+        self.place_mines() # rozmieszczenie min
+        self.compute_neighbors() # obliczenie sąsiadów
 
     # Losowanie unikalnej pozycji w postaci jednego indeksu
-    def _place_mines(self):
+    def place_mines(self):
         for p in random.sample(range(self.h * self.w), self.mines):
             y, x = divmod(p, self.w) # zamiana indeksu 1D na 2D
             self.board[y][x].is_mine = True
 
-    def _compute_neighbors(self):
+    def compute_neighbors(self):
         for y in range(self.h):
             for x in range(self.w):
                 if self.board[y][x].is_mine:
@@ -70,7 +69,7 @@ class Minesweeper:
                     if 0 <= ny < self.h and 0 <= nx < self.w:
                         self.reveal(ny, nx) # jeśli nie ma sąsiadów, odkrywamy sąsiadów
 
-        self._check_win() # sprawdzenie warunku wygranej
+        self.check_win() # sprawdzenie warunku wygranej
 
     def toggle_flag(self, y, x):
         c = self.board[y][x]
@@ -80,7 +79,7 @@ class Minesweeper:
         elif c.state == CellState.FLAGGED:
             c.state = CellState.HIDDEN
 
-    def _check_win(self):
+    def check_win(self):
         # Wygrana gdy wszystkie niezaminowane pola są odkryte
         for row in self.board:
             for c in row:
