@@ -1,9 +1,6 @@
 # 🧨 Saper w terminalu
-
 Klasyczna gra **Saper** zaimplementowana w Pythonie przy użyciu biblioteki **curses**.  
 Gra działa w terminalu i oferuje menu wyboru poziomu trudności, obsługę klawiatury oraz automatyczne odkrywanie pól.
-
----
 
 ## Funkcje gry
 
@@ -13,8 +10,6 @@ Gra działa w terminalu i oferuje menu wyboru poziomu trudności, obsługę klaw
 - automatyczne odkrywanie pustych obszarów
 - wykrywanie wygranej i przegranej
 - możliwość restartu gry bez wychodzenia z programu
-
----
 
 ## Uruchomienie gry
 Najpierw należy pobrać repozytorium za pomocą .zip na github lub sklonować repozytorium za pomocą komendy:
