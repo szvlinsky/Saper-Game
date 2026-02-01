@@ -9,9 +9,9 @@ class CellState(Enum):
     FLAGGED = auto()
 class Cell:
     def __init__(self, is_mine=False, neighbors=0, state=CellState.HIDDEN):
-        self.is_mine = is_mine      # czy pole zawiera minę
+        self.is_mine = is_mine # czy pole zawiera minę
         self.neighbors = neighbors # liczba min w sąsiedztwie
-        self.state = state         # aktualny stan pola
+        self.state = state # aktualny stan pola
 
 class Minesweeper:
     def __init__(self, size, mines):
@@ -51,9 +51,8 @@ class Minesweeper:
 
     # Odkrywanie pola i sąsiadów, gdy neighbors == 0
     def reveal(self, y, x):
-
         c = self.board[y][x]
-        if c.state != CellState.HIDDEN: 
+        if c.state != CellState.HIDDEN: #blokada ponownego odkrywania
             return
 
         c.state = CellState.REVEALED
@@ -88,7 +87,7 @@ class Minesweeper:
         self.win = True
         self.game_over = True
 
-
+# Rysowanie aktualnej planszy gry
 def draw_game(stdscr, game, cy, cx):
     stdscr.clear()
     stdscr.addstr(0, 0, "STEROWANIE | Strzałki: poruszanie | Spacja: odkryj | F: flaga | Q: wyjście")
@@ -131,18 +130,16 @@ def menu(stdscr):
 
         for i, (size, _) in enumerate(options):
             marker = ">" if i == idx else " "
-            stdscr.addstr(h // 2 + i, w // 2 - 7,
-                          f"{marker} {size} x {size}")
+            stdscr.addstr(h // 2 + i, w // 2 - 7, f"{marker} {size} x {size}")
 
-        stdscr.addstr(h // 2 + 4, w // 2 - 10,
-                      "ENTER – start | Q – wyjście")
+        stdscr.addstr(h // 2 + 4, w // 2 - 10, "ENTER – start | Q – wyjście")
         stdscr.refresh()
 
         key = stdscr.getch()
         
         # Obsługa nawigacji w menu
         if key == curses.KEY_UP:
-            idx = (idx - 1) % len(options)
+            idx = (idx - 1) % len(options) # modułowe zawijanie listy 
         elif key == curses.KEY_DOWN:
             idx = (idx + 1) % len(options)
         elif key in (ord("\n"), ord(" ")):
